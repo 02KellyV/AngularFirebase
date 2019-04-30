@@ -18,9 +18,12 @@ import { EditarUduarioComponent } from './editar-uduario/editar-uduario.componen
 
 
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { environment } from '../environments/environment';
 
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -38,8 +41,10 @@ import { environment } from '../environments/environment';
     ReactiveFormsModule,
     MatTableModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireDatabaseModule,
-    FormsModule
+    AngularFirestoreModule,
+    FormsModule,
+    BrowserAnimationsModule,
+    MatSnackBarModule
   ],
 
   providers: [],

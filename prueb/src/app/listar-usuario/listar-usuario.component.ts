@@ -17,15 +17,20 @@ export class ListarUsuarioComponent implements OnInit {
 
   ngOnInit() {
     this.usuarios = this.usuarioService.mostrarUsuario();
-    this.dataSource.data = this.usuarios;
-    console.log(this.usuarios);
+
+    this.usuarioService.obtenerUsuario().subscribe(usuario => {
+      console.log(usuario);
+      this.usuarios = usuario;
+      this.dataSource.data = this.usuarios;
+    });
   }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  eliminar(id: string){
-    this.dataSource.data = this.usuarioService.eliminarUsuario(id);
+  eliminar(id: string) {
+    this.usuarioService.borrarUsuario(id);
+    // this.dataSource.data = this.usuarioService.eliminarUsuario(id);
   }
 }

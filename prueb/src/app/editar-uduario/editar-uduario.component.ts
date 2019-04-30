@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {UsuariosService} from '../usuarios.service';
-import {ActivatedRoute} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {User} from '../class/user';
 
@@ -20,7 +20,7 @@ export class EditarUduarioComponent implements OnInit {
   });
   usuario: User;
 
-  constructor(private route: ActivatedRoute, private usuarioService: UsuariosService) { }
+  constructor(private router: Router, private route: ActivatedRoute, private usuarioService: UsuariosService) { }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -30,15 +30,24 @@ export class EditarUduarioComponent implements OnInit {
   }
 
   traerUsuario(id) {
-    this.usuario = this.usuarioService.traerUsuarioPorId(id);
-    this.nuevousuario.setValue(this.usuario);
+    this.usuarioService.obtenerUsuarioPorId(id).subscribe((usuario: User[]) => {
+      this.usuario = usuario [0];
+      this.nuevousuario.setValue({
+        nombres: this.usuario.nombres,
+        apellidos: this.usuario.apellidos,
+        correo: this.usuario.correo,
+        telefono: this.usuario.telefono,
+        fechaNacimiento: this.usuario.fechaNacimiento
+      });
+    });
   }
 
   editar() {
     if (this.nuevousuario.valid) {
       const user: User = this.nuevousuario.value;
       user.id = this.id;
-      this.usuarioService.editarUsuario(user);
+      this.usuarioService.actualizarUsuario(user);
+      this.router.navigate(['/listarusuario']);
     } else {
       console.log('error');
     }

@@ -1,40 +1,44 @@
 import { Injectable } from '@angular/core';
 
 import {User} from './class/user';
-import {AngularFireDatabase, AngularFireList} from '@angular/fire/database';
+
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuariosService {
   usuarios: User [] = [];
+  user: Observable<User[]>;
 
-  usuariolist: AngularFireList<any> = null;
-  constructor( private firebase: AngularFireDatabase) {
+  usuarioCollection: AngularFirestoreCollection<User>;
+  constructor( private afs: AngularFirestore) {
+    this.usuarioCollection = afs.collection<User>('usuario');
+    this.user = this.usuarioCollection.valueChanges();
   }
 
   obtenerUsuario() {
-    return this.usuariolist = this.firebase.list('usuarios');
+    return this.user;
   }
+
+  obtenerUsuarioPorId(id: string) {
+    return this.afs.collection('usuario',
+      ref => ref.where('id', '==', id)).valueChanges();
+  }
+
 
   insertarUsuario( usuario: User) {
-    console.log(this.usuariolist);
-    this.usuariolist.push({
-
-      nombre: usuario.nombres,
-      apellido: usuario.apellidos,
-      correo: usuario.correo,
-      telefono: usuario.telefono,
-      fechaNacimiento: usuario.fechaNacimiento
-    });
-    console.log(this.usuariolist);
+    usuario.id = this.afs.createId();
+    this.usuarioCollection.doc(usuario.id).set(usuario);
+}
+  borrarUsuario( id: string) {
+    this.usuarioCollection.doc(id).delete();
+    console.log(id);
   }
 
-
-  nuevoUsuario(usuario: User) {
-    this.usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    this.usuarios.push(usuario);
-    localStorage.setItem('usuarios', JSON.stringify(this.usuarios));
+  actualizarUsuario(usuario: User) {
+    this.usuarioCollection.doc(usuario.id).update(usuario);
   }
 
   mostrarUsuario() {
@@ -44,24 +48,31 @@ export class UsuariosService {
     }
     return user;
   }
+  /*
 
-  eliminarUsuario(id: string) {
-    const user: User[] = JSON.parse(localStorage.getItem('usuarios'));
-    user.splice(Number(id), 1);
-    localStorage.setItem('usuarios', JSON.stringify(user));
-    return user;
-  }
+    nuevoUsuario(usuario: User) {
+      this.usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
+      this.usuarios.push(usuario);
+      localStorage.setItem('usuarios', JSON.stringify(this.usuarios));
+    }
 
-  traerUsuarioPorId(id: string) {
-    const user: User[] = JSON.parse(localStorage.getItem('usuarios'));
-    return user[Number(id)];
+    eliminarUsuario(id: string) {
+      const user: User[] = JSON.parse(localStorage.getItem('usuarios'));
+      user.splice(Number(id), 1);
+      localStorage.setItem('usuarios', JSON.stringify(user));
+      return user;
+    }
 
-  }
+    traerUsuarioPorId(id: string) {
+      const user: User[] = JSON.parse(localStorage.getItem('usuarios'));
+      return user[Number(id)];
 
-  editarUsuario(usuario: User) {
-    const user: User [] = JSON.parse(localStorage.getItem('usuarios'));
-    user[Number(usuario.id)] = usuario;
-    localStorage.setItem('usuarios', JSON.stringify(user));
-  }
+    }
+
+    editarUsuario(usuario: User) {
+      const user: User [] = JSON.parse(localStorage.getItem('usuarios'));
+      user[Number(usuario.id)] = usuario;
+      localStorage.setItem('usuarios', JSON.stringify(user));
+    }*/
 }
 

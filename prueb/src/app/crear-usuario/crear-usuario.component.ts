@@ -2,6 +2,7 @@ import {FormGroup, FormControl, Validators} from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import {UsuariosService} from '../usuarios.service';
 import {User} from '../class/user';
+import {MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-crear-usuario',
@@ -17,7 +18,7 @@ export class CrearUsuarioComponent implements OnInit {
     fechaNacimiento: new FormControl('', [Validators.required])
   });
 
-  constructor(private usuarioService: UsuariosService ) {  }
+  constructor(private snackBar: MatSnackBar, private usuarioService: UsuariosService,  ) {  }
 
   ngOnInit() {
   }
@@ -27,6 +28,16 @@ export class CrearUsuarioComponent implements OnInit {
     if (this.nuevousuario.valid) {
       const user: User = this.nuevousuario.value;
       this.usuarioService.insertarUsuario(user);
+      this.nuevousuario.setValue({
+        nombres: '',
+        apellidos: '',
+        telefono: '',
+        correo: '',
+        fechaNacimiento: {}
+        });
+      this.snackBar.open('Guardado con éxito', 'cerrar', {
+        duration: 2000,
+      });
     } else {
       console.log('error');
     }
